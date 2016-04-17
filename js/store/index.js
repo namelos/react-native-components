@@ -4,10 +4,10 @@ import { reducer as form } from 'redux-form'
 
 /* --- */
 
-const createAction = type => payload =>
+export const createAction = type => payload =>
   ({ type, payload })
 
-const createReducer = (initialState, handlers) =>
+export const createReducer = (initialState = {}, handlers = {}) =>
   (state = initialState, action) =>
     handlers.hasOwnProperty(action.type) ?
       handlers[action.type](state, action.payload):
@@ -52,7 +52,7 @@ const renameActions = (namespace, renamedHandlers) => {
 }
 
 export const createDecorator = store =>
-  (reducerName, initialState, handlers) => {
+  (reducerName, initialState = {}, handlers = {}) => {
     const namespace = `${reducerName}_`
 
     const renamedHandlers = renameHandlers(namespace, handlers)

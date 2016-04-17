@@ -9,7 +9,7 @@ export const Button = ({children, onClick, style}) =>
 const defaultInputStyle = {height: 20, borderColor: '#000', borderWidth: 1}
 
 export const Input = ({value, onChange, style = defaultInputStyle}) =>
-  <TextInput value={value} onChangeText={onChange} style={style}/>
+{return <TextInput value={value} onChangeText={onChange} style={style}/>}
 
 const On = () => <Text>ON</Text>
 const Off = () => <Text>OFF</Text>
