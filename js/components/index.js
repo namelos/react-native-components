@@ -1,5 +1,7 @@
 import React, { View, Text, TextInput, TouchableOpacity } from 'react-native'
 
+export const Label = ({ children }) => <Text>{ children }</Text>
+
 export const Button = ({children, onClick, style}) =>
   <TouchableOpacity onPress={onClick} style={style}>
     {typeof children === 'string' ?
@@ -9,7 +11,7 @@ export const Button = ({children, onClick, style}) =>
 const defaultInputStyle = {height: 20, borderColor: '#000', borderWidth: 1}
 
 export const Input = ({value, onChange, style = defaultInputStyle}) =>
-{return <TextInput value={value} onChangeText={onChange} style={style}/>}
+  <TextInput value={value} onChangeText={onChange} style={style}/>
 
 const On = () => <Text>ON</Text>
 const Off = () => <Text>OFF</Text>
