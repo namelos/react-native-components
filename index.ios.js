@@ -1,103 +1,58 @@
 import React, {
-  AppRegistry, Component, StyleSheet,
-  Text, View, TouchableOpacity, TextInput
+  AppRegistry, Component, StyleSheet, PropTypes, Children,
+  Text, View, TouchableOpacity, TextInput, Navigator
 } from 'react-native'
-import { applyMiddleware } from 'redux'
+
 import { Provider } from 'react-redux'
-import { configureStore, createDecorator } from './js/store/index'
-import logger from 'redux-logger'
-import thunk from 'redux-thunk'
-import { reduxForm } from 'redux-form'
-import { Label, Button, Input, Radio, RadioGroup, CheckBox } from './js/components'
+import { store } from './js/index'
+import { FamilyInfo, Api } from './js/form'
+import { Button } from './js/components'
+import { Route, Router } from './js/router'
 
-const store = configureStore(applyMiddleware(thunk, logger()))
-const module = createDecorator(store)
+const { func, object, string, shape, any, array } = PropTypes
 
-const schema = {
-  form: 'my form',
-  endpoint: '/post/api',
-  fields: {
-    name: {
-      description: 'my new text field',
-      type: 'TextField',
-      validate: {
-        required: {
-          error: 'please fill in the blank'
-        }
-      }
-    },
-    sex: {
-      validate: 'your gender',
-      type: 'RadioGroup',
-      options: ['male', 'female']
-    }
-  }
-}
-
-const getValidate = schema => values => {
-  const errors = {}
-  Object.keys(schema.fields).forEach(field => {
-    const currentField = schema.fields[field]
-    const {validate} = currentField
-
-    if (validate) {
-      const {required} = validate
-      if (required && !(require.value === false)) {
-        if (!values[field]) {
-          errors[field] = required.error
-        }
-      }
-    }
-  })
-
-  return errors
-}
-
-const renderField = (field, { type, options }) => {
-  switch (type) {
-    case 'TextField': return <Input {...field} />
-    case 'RadioGroup': return <RadioGroup options={options} {...field} />
-  }
-}
-
-const renderFields = (fields, schema) =>
-  Object.keys(fields).map(field => {
-    const currentSchema = schema.fields[field]
-    const currentField = fields[field]
-    const {error} = currentField
-    const {description} = currentSchema
-    return <View key={field}>
-      {description && <Label>{description}</Label>}
-      {renderField(currentField, currentSchema)}
-      {error && <Label>{error}</Label>}
-    </View>
-  })
-
-const ReduxForm = reduxForm({})
-(({ fields, schema }) =>
-  <View>{renderFields(fields, schema)}</View>)
-
-const DynamicForm = ({ schema }) =>
-  <ReduxForm form={schema.form}
-             fields={Object.keys(schema.fields)} 
-             validate={getValidate(schema)} 
-             schema={schema} />
-
-const FamilyInfo = module('familyInfo')
-  (({api:{schema}}) =>
-    <View>
-      <DynamicForm schema={schema} />
-    </View>)
-
-const Api = module('api', { schema })
-  (() => <View />)
+/* --- */
 
 const ReactNativeComponents = () =>
   <Provider store={store}>
     <View style={{marginTop: 20}}>
-      <Api />
       <FamilyInfo />
     </View>
   </Provider>
 
-AppRegistry.registerComponent('ReactNativeComponents', () => ReactNativeComponents)
+// const PageOne = ({ navigator }, context) => <View>
+//   <Text>PAGE ONE</Text>
+//   <Button onClick={e => navigator.push({path: 'pageOne', component: PageTwo})}>To page two</Button>
+//   <Button onClick={e => console.log(context)}>LOG CONTEXT</Button>
+// </View>
+//
+// PageOne.contextTypes = {
+//   routes: object,
+//   navigator: any
+// }
+
+class PageOne extends Component {
+  static contextTypes = {
+    routes: object,
+    navigator: any
+  }
+
+  render = () => <View>
+    <Text>PAGE ONE</Text>
+    <Button onClick={e => navigator.push({path: 'pageOne', component: PageTwo})}>To page two</Button>
+    <Button onClick={e => console.log(this.context)}>LOG CONTEXT</Button>
+  </View>
+}
+
+const PageTwo = ({ navigator }) => <View>
+  <Text>PAGE TWO</Text>
+  <Button onClick={e => navigator.pop()}>BACK</Button>
+</View>
+
+const App = () =>
+  <Router>
+    <Route index path="pageOne" component={PageOne} />
+    <Route path="pageTwo" component={PageTwo} />
+  </Router>
+
+AppRegistry.registerComponent('ReactNativeComponents', () => App)
